@@ -3,7 +3,7 @@ import numpy as np
 from scipy import ndimage as ndi
 import cv2
 
-def warpping_module(volume, masks, transform):
+def warping_module(volume, masks, transform):
     n, h, w, d, c = volume.get_shape().as_list()
     arr = {}
     arr['masks'] = masks
