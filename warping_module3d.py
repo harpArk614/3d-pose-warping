@@ -78,7 +78,7 @@ def warpingModule(mask,transform,joint):
     warped_mask.append(rotation_estimation(joint['lear'],joint['rear'],joint['reye'],transform['lear'],transform['rear'],transform['reye'],mask[8]))
     warped_mask.append(rotation_estimation(joint['neck'],joint['pelv'],joint['rsho'],transform['neck'],transform['pelv'],transform['rsho'],mask[9]))
 
-    return wraped_mask
+    return warped_mask
 
 
 #Testing:
