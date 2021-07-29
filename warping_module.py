@@ -22,7 +22,7 @@ def rotation_estimation_3joint(joint1i,joint2i,joint3i,joint1f,joint2f,joint3f,m
   Mi=np.column_stack((ai*scle,bi*scle,ci*scle))
   Mf=np.column_stack((af,bf,cf))
 
-  rotation_mat=tf.linalg.matmul((Mf),tf.linalg.inv(Mi)) #s*R(ji-mi)=jf-mf
+  rotation_mat=tf.linalg.matmul((Mf),tf.linalg.pinv(Mi)) #s*R(ji-mi)=jf-mf
   midi=np.reshape(midi,(3,-1))
 
   mask=np.reshape(mask,(3,-1))
@@ -64,16 +64,16 @@ def rotation_estimation(joint1i,joint2i,joint1f,joint2f,mask):
 def warpingModule(mask,transform,joint):
     warped_mask=[]
 
-    warped_mask.append(rotation_estimation(joint['lsho'],joint['lelb'],transform['lsho'],transform['lelb'],mask[' ']))
-    warped_mask.append(rotation_estimation(joint['rsho'],joint['relb'],transform['rsho'],transform['relb'],mask[' ']))
-    warped_mask.append(rotation_estimation(joint['lelb'],joint['lwri'],transform['lelb'],transform['lwri'],mask[' ']))
-    warped_mask.append(rotation_estimation(joint['relb'],joint['rwri'],transform['relb'],transform['rwri'],mask[' ']))
-    warped_mask.append(rotation_estimation(joint['lhip'],joint['lkne'],transform['lhip'],transform['lkne'],mask[' ']))
-    warped_mask.append(rotation_estimation(joint['rhip'],joint['rkne'],transform['rhip'],transform['rkne'],mask[' ']))
-    warped_mask.append(rotation_estimation(joint['lkne'],joint['lank'],transform['lkne'],transform['lank'],mask[' ']))
-    warped_mask.append(rotation_estimation(joint['rkne'],joint['rank'],transform['rkne'],transform['rank'],mask[' ']))
-    warped_mask.append(rotation_estimation(joint['lear'],joint['rear'],joint['reye'],transform['lear'],transform['rear'],transform['reye'],mask[' ']))
-    warped_mask.append(rotation_estimation(joint['neck'],joint['pelv'],joint['rsho'],transform['neck'],transform['pelv'],transform['rsho'],mask[' ']))
+    warped_mask.append(rotation_estimation(joint['lsho'],joint['lelb'],transform['lsho'],transform['lelb'],mask[0]))
+    warped_mask.append(rotation_estimation(joint['rsho'],joint['relb'],transform['rsho'],transform['relb'],mask[1]))
+    warped_mask.append(rotation_estimation(joint['lelb'],joint['lwri'],transform['lelb'],transform['lwri'],mask[2]))
+    warped_mask.append(rotation_estimation(joint['relb'],joint['rwri'],transform['relb'],transform['rwri'],mask[3]))
+    warped_mask.append(rotation_estimation(joint['lhip'],joint['lkne'],transform['lhip'],transform['lkne'],mask[4]))
+    warped_mask.append(rotation_estimation(joint['rhip'],joint['rkne'],transform['rhip'],transform['rkne'],mask[5]))
+    warped_mask.append(rotation_estimation(joint['lkne'],joint['lank'],transform['lkne'],transform['lank'],mask[6]))
+    warped_mask.append(rotation_estimation(joint['rkne'],joint['rank'],transform['rkne'],transform['rank'],mask[7]))
+    warped_mask.append(rotation_estimation(joint['lear'],joint['rear'],joint['reye'],transform['lear'],transform['rear'],transform['reye'],mask[8]))
+    warped_mask.append(rotation_estimation(joint['neck'],joint['pelv'],joint['rsho'],transform['neck'],transform['pelv'],transform['rsho'],mask[9]))
 
     return wraped_mask
 
