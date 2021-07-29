@@ -87,55 +87,6 @@ def warp_3d(vol_batch, masks_batch, transform_batch, reduce=True):
         return res, net
 
 
-def warp_2d_3d(vol_batch, masks_batch, transform_batch, reduce=True):
-    n, h, w, d, c = vol_batch.get_shape().as_list()
-    with tf.name_scope('warp_2d_3d'):
-        net = {}
-        part_count = transform_batch.shape[1]
-
-        # MASKS 3D
-
-        net['bodypart_masks'] = masks_batch
-
-        img_batch = tf.reshape(vol_batch, (n, h, w, d * c))
-
-        init_image_size = (params['image_size'], params['image_size'])
-        affine_mul = [1, 1, init_image_size[0] / h,
-                      1, 1, init_image_size[1] / w,
-                      1, 1]
-        affine_mul = np.array(affine_mul).reshape((1, 1, 8))
-
-        expanded_tensor = tf.expand_dims(img_batch, -1)
-        multiples = [1, part_count, 1, 1, 1]
-        tiled_tensor = tf.tile(expanded_tensor, multiples=multiples)
-        repeated_tensor = tf.reshape(tiled_tensor, tf.shape(img_batch) * np.array([part_count, 1, 1, 1]))
-
-        affine_transforms = transform_batch / affine_mul
-        affine_transforms = tf.reshape(affine_transforms, (-1, 8))
-
-        transposed_masks = tf.transpose(masks_batch, [0, 3, 1, 2])
-        reshaped_masks = tf.reshape(transposed_masks, [n * part_count, h, w])
-        repeated_tensor = repeated_tensor * tf.expand_dims(reshaped_masks, axis=-1)
-        warped = tf.contrib.image.transform(repeated_tensor, affine_transforms)
-        res = tf.reshape(warped, [-1, part_count, h, w, d * c])
-        res = tf.transpose(res, [0, 2, 3, 1, 4])
-        if reduce:
-            res = tf.reduce_max(res, reduction_indices=[-2])
-
-        res = tf.reshape(res, (n, h, w, d, -1))
-        return res, net
-
-
-def residual_unit_3d(x):
-    filters = x.shape[-1]
-    r = x
-    for i in range(2):
-        r = group_norm(r)
-        r = tf.nn.relu(r)
-        r = tf.layers.conv3d(r, filters, kernel_size=3, padding='SAME')
-    return x + r
-
-
 def tf_pose_map_3d(poses, shape):
     y = tf.unstack(poses, axis=1)
     y[0], y[1] = y[1], y[0]
